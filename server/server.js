@@ -10,6 +10,16 @@ const app = express();
 // Apply middleware that'll parse strings to JSON
 app.use(bodyParser.json());
 
+app.get('/todos', (req, res) => {
+  Todo.find().then(todos => {
+    // Sending { todos } instead of todos array is more flexible
+    // and let us store additional info, it's good practise
+    res.send({todos});
+  }, err => {
+    res.status(400).send(err);
+  });
+});
+
 // Create todos endpoint for posting todos
 app.post('/todos', (req, res) => {
   const todo = new Todo({
