@@ -25,7 +25,7 @@ app.get('/todos', (req, res) => {
 
 // Create todos endpoint for getting specific todos
 app.get('/todos/:id', (req, res) => {
-  var id = req.params.id;
+  const { id } = req.params;
 
   if (!ObjectID.isValid(id)) {
     return res.status(404).send();
@@ -37,8 +37,8 @@ app.get('/todos/:id', (req, res) => {
     }
 
     res.send({todo});
-  }).catch((e) => {
-    res.status(400).send();
+  }).catch(err => {
+    res.status(400).send(err);
   });
 });
 
@@ -51,7 +51,25 @@ app.post('/todos', (req, res) => {
   todo.save().then(doc => {
     res.send(doc);
   }, err => {
-    res.status(400).send(err);
+    res.status(400).send();
+  });
+});
+
+app.delete('/todos/:id', (req, res) => {
+  const { id } = req.params;
+
+  if (!ObjectID.isValid(id)) {
+    return res.status(404).send();
+  }
+
+  Todo.findByIdAndRemove(id).then(todo => {
+    if (!todo) {
+      return res.status(404).send();
+    }
+
+    res.send({ todo });
+  }).catch(err => {
+    res.status(400).send();
   });
 });
 
